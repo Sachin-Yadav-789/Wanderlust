@@ -1,0 +1,155 @@
+<% layout("/layouts/boilerplate") %>
+ 
+ <style>
+        #filters{
+           display: flex;
+           flex-wrap: wrap;
+           align-items: center;
+           gap: 0.5rem 1rem;
+          }
+     .filter{
+           margin-top: 1.5rem;
+           text-align: center;
+           opacity: 0.7;
+           margin-right: 0.5rem;
+           color: inherit;
+           text-decoration: none;
+         }
+    .filter:hover{
+          opacity: 1;  
+       }
+   .filter.active{
+      opacity: 1;
+      border-bottom: 2px solid #fe424d;
+   }
+   .filter p{
+      font-size: 0.8rem;
+      margin-bottom: 0;
+   }
+   .toggle-tax{
+      border: 0.5px solid black;
+      border-radius: 1rem;
+      height: 3.25rem;
+      padding: 1rem;
+      margin: 1.5rem auto 0;
+      display: flex;
+      align-items: center;
+   }
+   @media (max-width: 767.98px){
+      #filters{
+         justify-content: space-between;
+      }
+      .filter{
+         flex: 0 0 28%;
+      }
+      .toggle-tax{
+         margin: 1rem auto;
+      }
+   }
+
+    .tax-info{
+      display: none;
+    }
+   </style>
+    
+    <button
+      class="btn btn-outline-dark w-100 my-3 d-md-none"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#listingFilters"
+      aria-expanded="false"
+      aria-controls="listingFilters"
+    >
+     Show filters
+    </button>
+    <div class="collapse d-md-block" id="listingFilters">
+    <div id="filters">
+       <% const filterIcons = {
+          "Trending": "fa-fire",
+          "Room": "fa-bed",
+          "Iconic cities": "fa-mountain-city",
+          "Mountain": "fa-mountain-sun",
+          "Castles": "fa-fort-awesome",
+          "Amazing Place": "fa-person-swimming",
+          "Arctic": "fa-snowflake",
+          "Camping": "fa-campground",
+          "Farms": "fa-tractor",
+          "Domes": "fa-igloo",
+          "Boats": "fa-ship",
+          "Temple":"fa-place-of-worship"
+   }; %>
+       <a class="filter <%= category ? '' : 'active' %>"
+          href="/listings<%= search ? `?search=${encodeURIComponent(search)}` : '' %>"
+          <%= category ? '' : 'aria-current="page"' %>>
+           <div><i class="fa-solid fa-compass"></i></div>
+           <p>All stays</p>
+       </a>
+       <% for (let filterCategory of listingCategories) { %>
+         <a class="filter <%= category === filterCategory ? 'active' : '' %>"
+            href="/listings?category=<%= encodeURIComponent(filterCategory) %><%= search ? `&search=${encodeURIComponent(search)}` : '' %>"
+            <%= category === filterCategory ? 'aria-current="page"' : '' %>>
+           <div><i class="fa-solid <%= filterIcons[filterCategory] %>"></i></div>
+           <p><%= filterCategory %></p>
+         </a>
+       <% } %>
+
+
+ <div class="toggle-tax">
+      <div class="form-check-reverse form-switch">
+         <input 
+           class="form-check-input" 
+           type="checkbox" 
+           role="switch" 
+           id="switchCustomWidth"
+           >
+         <label class="form-check-label" for="switchCustomWidth">Display total after taxes</label>
+      </div>
+</div>
+
+</div>
+    </div>
+   
+   <div class="row   row-cols-lg-3 row-cols-md-2  row-cols-1  row-cols-xs-1 mt-3">
+       <% if (AllListings.length === 0) { %>
+         <div class="col-12">
+           <p class="alert alert-info">No listings match these filters. Try another search or <a href="/listings">clear filters</a>.</p>
+         </div>
+       <% } %>
+       <% for(let listing of AllListings){ %>
+        <a href="/listings/<%=listing._id%>" class="listing-link">
+         <div class="card col listing-card">
+          
+             <img src="<%=  listing.image.url  %>" class="card-img-top" alt="listing_image" style="height: 20rem;">
+             <div class="card-img-overlay"></div>  
+          <!-- <pre><%= JSON.stringify(listing.image) %></pre> -->
+               <div class="card-body">
+                   <p class="card-text">
+             <b><%= listing.title %></b> <br>
+          &#8377;<%= listing.price.toLocaleString("en-IN")%>/night
+           <i class="tax-info">&nbsp; &nbsp; +18% GST </i>
+             </p> 
+             </div>
+              
+            </div>
+              </a>
+          <% } %> 
+         </div>       
+      
+         <script>
+              let taxSwitch = document.getElementById("switchCustomWidth");
+              taxSwitch.addEventListener("click", () =>{
+              taxInfo = document.getElementsByClassName("tax-info");
+            for(info of taxInfo) { 
+               if(info.style.display == 'none'  ){
+                   info.style.display = "inline";
+               }else{
+                  info.style.display = "none";
+               }
+               
+             } 
+              })
+         </script>
+
+
+
+   
